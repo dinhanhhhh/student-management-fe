@@ -1,24 +1,34 @@
+// app/(auth)/login/page.tsx
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useState } from "react";
+import type { FormEvent } from "react";
+import { useState } from "react";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="p-8">Đang tải trang đăng nhập…</div>}>
+      <LoginInner />
+    </Suspense>
+  );
+}
+
+function LoginInner() {
   const router = useRouter();
   const sp = useSearchParams();
   const nextPath = sp.get("next") || "/students";
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [err, setErr] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErr(null);
     setLoading(true);
     try {
-      // Gọi BE: POST /api/auth/login qua rewrite /be/auth/login
       const res = await fetch("/be/auth/login", {
         method: "POST",
         credentials: "include",
@@ -49,6 +59,7 @@ export default function LoginPage() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="student01"
+            autoComplete="username"
           />
         </div>
         <div>
@@ -59,6 +70,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
+            autoComplete="current-password"
           />
         </div>
         {err && <p className="text-sm text-red-600">{err}</p>}

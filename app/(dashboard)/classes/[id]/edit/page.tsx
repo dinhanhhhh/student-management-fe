@@ -5,11 +5,11 @@ import ClassForm from "@/components/ClassForm";
 import { apiServerFetch } from "@/lib/api-server";
 import type { ClassDoc } from "@/types/class";
 
-// ❗ Next 15: params là ĐỒNG BỘ, không phải Promise
-type Params = { id: string };
+// ✅ Next.js 15: params là Promise -> cần await
+type Params = Promise<{ id: string }>;
 
 export default async function ClassEditPage({ params }: { params: Params }) {
-  const { id } = params;
+  const { id } = await params; // ← BẮT BUỘC await
 
   // gọi BE, nếu 404/lỗi -> notFound()
   let cls: ClassDoc | null = null;

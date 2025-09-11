@@ -3,17 +3,23 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSubjectById } from "@/lib/data-subjects";
 
-type Params = { id: string };
+// ✅ Next.js 15: params là Promise -> cần await
+type Params = Promise<{ id: string }>;
 
 export default async function SubjectDetailPage({
   params,
 }: {
   params: Params;
 }) {
-  const { id } = params;
+  const { id } = await params;
 
-  // Gọi API chi tiết
-  const subject = await getSubjectById(id);
+  // Gọi API chi tiết; nếu lỗi/404 -> notFound()
+  let subject: Awaited<ReturnType<typeof getSubjectById>> | null = null;
+  try {
+    subject = await getSubjectById(id);
+  } catch {
+    return notFound();
+  }
   if (!subject) return notFound();
 
   return (
